@@ -1,8 +1,11 @@
 package ru.javawebinar.topjava.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class MealTo {
+    private final String uuid;
+
     private final LocalDateTime dateTime;
 
     private final String description;
@@ -11,11 +14,45 @@ public class MealTo {
 
     private final boolean excess;
 
-    public MealTo(LocalDateTime dateTime, String description, int calories, boolean excess) {
+    public MealTo(String uuid, LocalDateTime dateTime, String description, int calories, boolean excess) {
+        this.uuid = uuid;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
         this.excess = excess;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public boolean isExcess() {
+        return excess;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MealTo mealTo = (MealTo) o;
+        return calories == mealTo.calories && excess == mealTo.excess && uuid.equals(mealTo.uuid) && dateTime.equals(mealTo.dateTime) && description.equals(mealTo.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, dateTime, description, calories, excess);
     }
 
     @Override
