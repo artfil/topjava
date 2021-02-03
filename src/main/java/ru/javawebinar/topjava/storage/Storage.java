@@ -7,15 +7,11 @@ import java.util.List;
 public interface Storage {
     void add(Meal meal);
 
-    Meal get(String uuid);
+    Meal get(int id);
 
     List<Meal> getAll();
 
-    void update(Meal meal);
+    void update(int id, Meal meal);
 
-    void delete(String uuid);
-
-    void clear();
-
-    int size();
+    void delete(int id);
 }

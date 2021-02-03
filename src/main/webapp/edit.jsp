@@ -12,7 +12,7 @@
 <h2 align="center">Create/Edit meal</h2>
 <section>
     <form method="post" action="meals" enctype="application/x-www-form-urlencoded">
-        <input type="hidden" name="uuid" value="${meal.uuid}">
+        <input type="hidden" name="id" value="${meal.id}">
         <p align="center">
             DateTime:
             <input type="text" name="date" size="30" value="<%=meal.getDateTime().format(FORMAT)%>"

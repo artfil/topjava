@@ -20,22 +20,21 @@ import static ru.javawebinar.topjava.TestData.*;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
-    private final Storage listStorage = meals;
-    private static final int CALORIESPERDAY = 2000;
+    private final Storage storage = meals;
     public static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        String uuid = request.getParameter("uuid");
+        String stringId = request.getParameter("id");
         String date = request.getParameter("date");
         String description = request.getParameter("description");
         int calories = Integer.parseInt(request.getParameter("calories"));
-        Meal meal = new Meal(uuid, LocalDateTime.parse(date, FORMAT), description, calories);
-        if (listStorage.get(uuid) == null) {
-            listStorage.add(meal);
+        if (stringId.isEmpty()) {
+            storage.add(new Meal(LocalDateTime.parse(date, FORMAT), description, calories));
         } else {
-            listStorage.update(meal);
+            int id = Integer.parseInt(stringId);
+            storage.update(id, new Meal(id, LocalDateTime.parse(date, FORMAT), description, calories));
         }
         response.sendRedirect("meals");
     }
@@ -43,17 +42,18 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("redirect to meals");
-        String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         if (action == null) {
-            request.setAttribute("meals", MealsUtil.filteredByStreams(listStorage.getAll(), LocalTime.MIN, LocalTime.MAX, CALORIESPERDAY));
+            request.setAttribute("meals", MealsUtil.filteredByStreams(storage.getAll(), LocalTime.MIN, LocalTime.MAX, CALORIES_PER_DAY));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
             return;
         }
         Meal meal;
+        int id;
         switch (action) {
             case "delete": {
-                listStorage.delete(uuid);
+                id = Integer.parseInt(request.getParameter("id"));
+                storage.delete(id);
                 response.sendRedirect("meals");
                 return;
             }
@@ -62,7 +62,8 @@ public class MealServlet extends HttpServlet {
                 break;
             }
             case "edit": {
-                meal = listStorage.get(uuid);
+                id = Integer.parseInt(request.getParameter("id"));
+                meal = storage.get(id);
                 break;
             }
             default:

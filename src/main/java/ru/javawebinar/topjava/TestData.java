@@ -1,7 +1,7 @@
 package ru.javawebinar.topjava;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.storage.ListStorage;
+import ru.javawebinar.topjava.storage.ConcurrentHashMapStorage;
 import ru.javawebinar.topjava.storage.Storage;
 
 import java.time.LocalDateTime;
@@ -12,7 +12,8 @@ import java.time.Month;
  * @see <a href="https://github.com/JavaOPs/topjava">Initial project</a>
  */
 public class TestData {
-    public static Storage meals = new ListStorage();
+    public static Storage meals = new ConcurrentHashMapStorage();
+    public static final int CALORIES_PER_DAY = 2000;
 
     static {
         meals.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));

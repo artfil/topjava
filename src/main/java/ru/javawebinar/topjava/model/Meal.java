@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Meal {
-    private final String uuid;
+    private Integer id;
 
     private final LocalDateTime dateTime;
 
@@ -15,19 +15,23 @@ public class Meal {
 
     private final int calories;
 
-    public Meal(LocalDateTime dateTime, String description, int calories) {
-        this(UUID.randomUUID().toString(), dateTime, description, calories);
-    }
-
-    public Meal(String uuid, LocalDateTime dateTime, String description, int calories) {
-        this.uuid = uuid;
+    public Meal(Integer id, LocalDateTime dateTime, String description, int calories) {
+        this.id = id;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
     }
 
-    public String getUuid() {
-        return uuid;
+    public Meal(LocalDateTime dateTime, String description, int calories) {
+        this(null, dateTime, description, calories);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public LocalDateTime getDateTime() {
@@ -48,18 +52,5 @@ public class Meal {
 
     public LocalTime getTime() {
         return dateTime.toLocalTime();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Meal meal = (Meal) o;
-        return calories == meal.calories && uuid.equals(meal.uuid) && dateTime.equals(meal.dateTime) && description.equals(meal.description);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(uuid, dateTime, description, calories);
     }
 }
