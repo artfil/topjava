@@ -70,12 +70,16 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "filter": {
-                LocalDate startDay = LocalDate.parse(request.getParameter("startDay"));
-                LocalDate endDay = LocalDate.parse(request.getParameter("endDay"));
-                LocalTime start = LocalTime.parse(request.getParameter("start"));
-                LocalTime end = LocalTime.parse(request.getParameter("end"));
-                log.info("getAll with startDay={} and endDay={} with start={} and end={}", startDay, endDay, start, end);
-                request.setAttribute("meals", repository.getFilter(startDay, endDay, start, end));
+                String startD = request.getParameter("startDay");
+                String endD = request.getParameter("endDay");
+                String startT = request.getParameter("start");
+                String endT = request.getParameter("end");
+                if (startD.isEmpty() || endD.isEmpty() || startT.isEmpty() || endT.isEmpty()) {
+                    request.setAttribute("meals", repository.getAll());
+                    request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                    break;
+                }
+                request.setAttribute("meals", repository.getFilter(LocalDate.parse(startD), LocalDate.parse(endD), LocalTime.parse(startT), LocalTime.parse(endT)));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             }
