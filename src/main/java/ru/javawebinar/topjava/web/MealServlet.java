@@ -74,7 +74,7 @@ public class MealServlet extends HttpServlet {
                 String startD = request.getParameter("startDay"), endD = request.getParameter("endDay"),
                         startT = request.getParameter("start"), endT = request.getParameter("end");
                 LocalDate startDay = StringUtils.isEmpty(startD) ? LocalDate.MIN : LocalDate.parse(startD);
-                LocalDate endDay = StringUtils.isEmpty(endD) ? LocalDate.MAX : LocalDate.parse(endD);
+                LocalDate endDay = StringUtils.isEmpty(endD) ? LocalDate.MAX.minusDays(1) : LocalDate.parse(endD);
                 LocalTime start = StringUtils.isEmpty(startT) ? LocalTime.MIN : LocalTime.parse(startT);
                 LocalTime end = StringUtils.isEmpty(endT) ? LocalTime.MAX : LocalTime.parse(endT);
                 request.setAttribute("meals", controller.getFilter(startDay, endDay, start, end));
