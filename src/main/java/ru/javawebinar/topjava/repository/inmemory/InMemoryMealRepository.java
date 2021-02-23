@@ -56,7 +56,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Collection<Meal> getFilter(int userId, LocalDate startDay, LocalDate endDay) {
         log.info("getAll");
-        return getAllFilter(userId, meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDay, endDay));
+        return getAllFilter(userId, meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDay, endDay.plusDays(1)));
     }
 
     private Collection<Meal> getAllFilter(int userId, Predicate<Meal> filter) {
