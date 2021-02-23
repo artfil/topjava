@@ -3,10 +3,7 @@ package ru.javawebinar.topjava.repository;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public interface MealRepository {
     // null if not found, when updated
@@ -20,5 +17,5 @@ public interface MealRepository {
 
     Collection<Meal> getAll(int userId);
 
-    Collection<Meal> getFilter(int userId, LocalDate startDay, LocalDate endDay, LocalTime start, LocalTime end);
+    Collection<Meal> getFilter(int userId, LocalDate startDay, LocalDate endDay);
 }

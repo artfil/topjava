@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.StringUtils;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -22,13 +23,13 @@ import java.util.Objects;
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
     private ConfigurableApplicationContext applicationContext;
-    private MealRestController repository;
+    private MealRestController controller;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         applicationContext = new ClassPathXmlApplicationContext("spring/spring-app.xml");
-        repository = applicationContext.getBean(MealRestController.class);
+        controller = applicationContext.getBean(MealRestController.class);
     }
 
     @Override
@@ -36,16 +37,16 @@ public class MealServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
 
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id), SecurityUtil.authUserId(),
+        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         if (meal.isNew()) {
-            repository.create(meal);
+            controller.create(meal);
         } else {
-            repository.update(meal, Integer.parseInt(id));
+            controller.update(meal, Integer.parseInt(id));
         }
         response.sendRedirect("meals");
     }
@@ -58,35 +59,32 @@ public class MealServlet extends HttpServlet {
             case "delete":
                 int id = getId(request);
                 log.info("Delete {}", id);
-                repository.delete(id);
+                controller.delete(id);
                 response.sendRedirect("meals");
                 break;
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(null, SecurityUtil.authUserId(), LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                        repository.get(getId(request));
+                        new Meal(null, LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
+                        controller.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "filter": {
-                String startD = request.getParameter("startDay");
-                String endD = request.getParameter("endDay");
-                String startT = request.getParameter("start");
-                String endT = request.getParameter("end");
-                if (startD.isEmpty() || endD.isEmpty() || startT.isEmpty() || endT.isEmpty()) {
-                    request.setAttribute("meals", repository.getAll());
-                    request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                    break;
-                }
-                request.setAttribute("meals", repository.getFilter(LocalDate.parse(startD), LocalDate.parse(endD), LocalTime.parse(startT), LocalTime.parse(endT)));
+                String startD = request.getParameter("startDay"), endD = request.getParameter("endDay"),
+                        startT = request.getParameter("start"), endT = request.getParameter("end");
+                LocalDate startDay = StringUtils.isEmpty(startD) ? LocalDate.MIN : LocalDate.parse(startD);
+                LocalDate endDay = StringUtils.isEmpty(endD) ? LocalDate.MAX : LocalDate.parse(endD);
+                LocalTime start = StringUtils.isEmpty(startT) ? LocalTime.MIN : LocalTime.parse(startT);
+                LocalTime end = StringUtils.isEmpty(endT) ? LocalTime.MAX : LocalTime.parse(endT);
+                request.setAttribute("meals", controller.getFilter(startDay, endDay, start, end));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             }
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals", repository.getAll());
+                request.setAttribute("meals", controller.getAll());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
