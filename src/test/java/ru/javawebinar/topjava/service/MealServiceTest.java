@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,6 +15,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,6 +31,40 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static final Logger logger = Logger.getLogger("");
+    private static final StringBuilder stringBuilder = new StringBuilder();
+    private static final char[] spaces = new char[50];
+    private static final char[] lines = new char[60];
+
+    static {
+        Arrays.fill(spaces, ' ');
+        Arrays.fill(lines, '-');
+    }
+
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String testName = description.getMethodName();
+            String time = String.valueOf(TimeUnit.NANOSECONDS.toNanos(nanos)).substring(0, 3);
+            logger.info(String.format("Test %s finished, spent %s milliseconds",
+                    testName, time));
+            stringBuilder
+                    .append(lines)
+                    .append("\n")
+                    .append(testName)
+                    .append(spaces, 0, 49 - testName.length())
+                    .append("|  ")
+                    .append(time)
+                    .append(" ms \n");
+        }
+    };
+
+    @AfterClass
+    public static void printAllTestTime() {
+        stringBuilder.append(lines);
+        System.out.println(stringBuilder);
+    }
 
     @Autowired
     private MealService service;
