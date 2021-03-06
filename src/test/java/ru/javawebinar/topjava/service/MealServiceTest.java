@@ -15,7 +15,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -32,38 +31,23 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
     private static final Logger logger = Logger.getLogger("");
-    private static final StringBuilder stringBuilder = new StringBuilder();
-    private static final char[] spaces = new char[50];
-    private static final char[] lines = new char[60];
-
-    static {
-        Arrays.fill(spaces, ' ');
-        Arrays.fill(lines, '-');
-    }
+    private static String str;
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
             String testName = description.getMethodName();
-            String time = String.valueOf(TimeUnit.NANOSECONDS.toNanos(nanos)).substring(0, 3);
+            long time = TimeUnit.NANOSECONDS.toMillis(nanos);
             logger.info(String.format("Test %s finished, spent %s milliseconds",
                     testName, time));
-            stringBuilder
-                    .append(lines)
-                    .append("\n")
-                    .append(testName)
-                    .append(spaces, 0, 49 - testName.length())
-                    .append("|  ")
-                    .append(time)
-                    .append(" ms \n");
+            str += String.format("%s%2$" + (50 - testName.length()) + "d ms \n", testName, time);
         }
     };
 
     @AfterClass
     public static void printAllTestTime() {
-        stringBuilder.append(lines);
-        System.out.println(stringBuilder);
+        logger.info("\n" + str.substring(4));
     }
 
     @Autowired
@@ -93,6 +77,7 @@ public class MealServiceTest {
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
         MEAL_MATCHER.assertMatch(service.get(newId, USER_ID), newMeal);
+        System.out.println(meal1.getCalories());
     }
 
     @Test
