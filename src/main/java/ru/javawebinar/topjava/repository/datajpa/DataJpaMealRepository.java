@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
@@ -13,22 +12,12 @@ import java.util.List;
 @Repository
 public class DataJpaMealRepository implements MealRepository {
 
-    static final Sort SORT_DATE = Sort.by(Sort.Direction.DESC, "dateTime");
-
     private final CrudMealRepository crudRepository;
     private final CrudUserRepository crudUserRepository;
 
     public DataJpaMealRepository(CrudMealRepository crudRepository, CrudUserRepository crudUserRepository) {
         this.crudRepository = crudRepository;
         this.crudUserRepository = crudUserRepository;
-    }
-
-    @Override
-    public Meal getMealAndUser(int id, int userId) {
-        User user = getUserById(userId);
-        Meal meal = get(id,userId);
-        meal.setUser(user);
-        return meal;
     }
 
     @Transactional
@@ -43,17 +32,18 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        return crudRepository.deleteByIdAndUser(id, getUserById(userId)) != 0;
+        return crudRepository.deleteByIdAndUser(id, userId) != 0;
     }
 
     @Override
     public Meal get(int id, int userId) {
-        return crudRepository.getByIdAndUser(id, getUserById(userId));
+        return crudRepository.findById(id)
+                .filter(meal -> meal.getUser().getId() == userId).orElse(null);
     }
 
     @Override
     public List<Meal> getAll(int userId) {
-        return crudRepository.getAllSortByUser(getUserById(userId), SORT_DATE);
+        return crudRepository.getAllSortByUser(userId);
     }
 
     @Override

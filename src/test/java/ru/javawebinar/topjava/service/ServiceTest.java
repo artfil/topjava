@@ -51,25 +51,4 @@ public abstract class ServiceTest {
                 "\n---------------------------------");
         results.setLength(0);
     }
-
-    @Test
-    public abstract void create();
-
-    @Test
-    public abstract void delete();
-
-    @Test
-    public abstract void deletedNotFound();
-
-    @Test
-    public abstract void get();
-
-    @Test
-    public abstract void getNotFound();
-
-    @Test
-    public abstract void update();
-
-    @Test
-    public abstract void getAll();
 }

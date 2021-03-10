@@ -57,7 +57,7 @@ public abstract class MealServiceTest extends ServiceTest {
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), meal1);
     }
 
-    @Override
+    @Test
     public void create() {
         Meal created = service.create(getNew(), USER_ID);
         int newId = created.id();
@@ -67,36 +67,36 @@ public abstract class MealServiceTest extends ServiceTest {
         MEAL_MATCHER.assertMatch(service.get(newId, USER_ID), newMeal);
     }
 
-    @Override
+    @Test
     public void delete() {
         service.delete(MEAL1_ID, USER_ID);
         assertThrows(NotFoundException.class, () -> service.get(MEAL1_ID, USER_ID));
     }
 
-    @Override
+    @Test
     public void deletedNotFound() {
         assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND, USER_ID));
     }
 
-    @Override
+    @Test
     public void get() {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
         MEAL_MATCHER.assertMatch(actual, adminMeal1);
     }
 
-    @Override
+    @Test
     public void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, USER_ID));
     }
 
-    @Override
+    @Test
     public void update() {
         Meal updated = getUpdated();
         service.update(updated, USER_ID);
         MEAL_MATCHER.assertMatch(service.get(MEAL1_ID, USER_ID), getUpdated());
     }
 
-    @Override
+    @Test
     public void getAll() {
         MEAL_MATCHER.assertMatch(service.getAll(USER_ID), meals);
     }

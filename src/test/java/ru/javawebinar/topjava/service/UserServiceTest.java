@@ -40,7 +40,7 @@ public abstract class UserServiceTest extends ServiceTest {
         USER_MATCHER.assertMatch(user, admin);
     }
 
-    @Override
+    @Test
     public void create() {
         User created = service.create(getNew());
         int newId = created.id();
@@ -50,36 +50,36 @@ public abstract class UserServiceTest extends ServiceTest {
         USER_MATCHER.assertMatch(service.get(newId), newUser);
     }
 
-    @Override
+    @Test
     public void delete() {
         service.delete(USER_ID);
         assertThrows(NotFoundException.class, () -> service.get(USER_ID));
     }
 
-    @Override
+    @Test
     public void deletedNotFound() {
         assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND));
     }
 
-    @Override
+    @Test
     public void get() {
         User user = service.get(USER_ID);
         USER_MATCHER.assertMatch(user, UserTestData.user);
     }
 
-    @Override
+    @Test
     public void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND));
     }
 
-    @Override
+    @Test
     public void update() {
         User updated = getUpdated();
         service.update(updated);
         USER_MATCHER.assertMatch(service.get(USER_ID), getUpdated());
     }
 
-    @Override
+    @Test
     public void getAll() {
         List<User> all = service.getAll();
         USER_MATCHER.assertMatch(all, admin, user);
