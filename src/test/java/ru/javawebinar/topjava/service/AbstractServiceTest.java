@@ -49,8 +49,8 @@ abstract public class AbstractServiceTest {
         });
     }
 
-    protected boolean profileIdentifier(String name) {
+    protected boolean isJdbcProfile() {
         return Arrays.stream(environment.getActiveProfiles())
-                .anyMatch(profile -> profile.equalsIgnoreCase(name));
+                .anyMatch(profile -> profile.equalsIgnoreCase("jdbc"));
     }
 }

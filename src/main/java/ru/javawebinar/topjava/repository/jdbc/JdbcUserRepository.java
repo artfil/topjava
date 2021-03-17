@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,19 +42,22 @@ public class JdbcUserRepository implements UserRepository {
     @Transactional
     @Override
     public User save(User user) {
+        ValidationUtil.jdbcValidation(user);
+
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
             insertRoles(user.getRoles(), user.getId());
+        } else if (namedParameterJdbcTemplate.update("""
+                   UPDATE users SET name=:name, email=:email, password=:password, 
+                   registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
+                """, parameterSource) == 0) {
+            return null;
         } else {
             deleteRoles(user.getId());
             insertRoles(user.getRoles(), user.getId());
-            return namedParameterJdbcTemplate.update("""
-                       UPDATE users SET name=:name, email=:email, password=:password, 
-                       registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                    """, parameterSource) == 0 ? null : user;
         }
         return user;
     }
@@ -67,32 +71,29 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public User get(int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
-        User user = DataAccessUtils.singleResult(users);
-        if (user != null)
-            user.setRoles(getRoles(id));
-        return user;
+        return getRoles(DataAccessUtils.singleResult(users));
     }
 
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        User user = DataAccessUtils.singleResult(users);
-        if (user != null)
-            user.setRoles(getRoles(user.id()));
-        return user;
+        return getRoles(DataAccessUtils.singleResult(users));
     }
 
     @Override
     public List<User> getAll() {
+        Map<Integer, Set<Role>> roles = getAllRoles();
         return jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER).stream()
-                .peek(user -> user.setRoles(getAllRoles().get(user.getId())))
+                .peek(user -> user.setRoles(roles.get(user.getId())))
                 .collect(Collectors.toList());
     }
 
-    public List<Role> getRoles(int id) {
-        return jdbcTemplate.query("SELECT * FROM user_roles WHERE user_id=?",
-                (resultSet, i) -> Role.valueOf(resultSet.getString("role")), id);
+    public User getRoles(User user) {
+        if (user != null)
+            user.setRoles(jdbcTemplate.query("SELECT * FROM user_roles WHERE user_id=?",
+                    (resultSet, i) -> Role.valueOf(resultSet.getString("role")), user.getId()));
+        return user;
     }
 
     public Map<Integer, Set<Role>> getAllRoles() {
@@ -107,7 +108,6 @@ public class JdbcUserRepository implements UserRepository {
         });
     }
 
-    @Transactional
     public void insertRoles(Set<Role> roles, int id) {
         jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) VALUES (?, ?)", roles, roles.size(), (preparedStatement, role) -> {
             preparedStatement.setInt(1, id);
@@ -115,7 +115,6 @@ public class JdbcUserRepository implements UserRepository {
         });
     }
 
-    @Transactional
     public void deleteRoles(int id) {
         jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", id);
     }

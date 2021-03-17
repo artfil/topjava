@@ -8,13 +8,14 @@
 <head>
     <title>Meals</title>
     <link rel="stylesheet" href="css/style.css">
+    <base href="${pageContext.request.contextPath}/"/>
 </head>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <hr/>
     <h3><spring:message code="meal.title"/></h3>
-    <form method="post" action="${pageContext.request.contextPath}/filter">
+    <form method="post" action="filter">
         <dl>
             <dt><spring:message code="meal.startDate"/>:</dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
@@ -34,7 +35,7 @@
         <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
     <hr/>
-    <a href="${pageContext.request.contextPath}/create"><spring:message code="meal.add"/></a>
+    <a href="create"><spring:message code="meal.add"/></a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -57,8 +58,8 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="${pageContext.request.contextPath}/update?id=${meal.id}"><spring:message code="common.update"/></a></td>
-                <td><a href="${pageContext.request.contextPath}/delete?id=${meal.id}"><spring:message code="common.delete"/></a></td>
+                <td><a href="update?id=${meal.id}"><spring:message code="common.update"/></a></td>
+                <td><a href="delete?id=${meal.id}"><spring:message code="common.delete"/></a></td>
             </tr>
         </c:forEach>
     </table>

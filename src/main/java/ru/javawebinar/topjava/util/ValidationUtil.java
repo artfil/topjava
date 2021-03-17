@@ -3,6 +3,9 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+
 public class ValidationUtil {
     private ValidationUtil() {
     }
@@ -51,5 +54,12 @@ public class ValidationUtil {
             result = cause;
         }
         return result;
+    }
+
+    public static <T extends AbstractBaseEntity> boolean jdbcValidation(T entity) {
+        if (Validation.buildDefaultValidatorFactory().getValidator().validate(entity).isEmpty())
+            return true;
+        else
+            throw new ValidationException();
     }
 }
