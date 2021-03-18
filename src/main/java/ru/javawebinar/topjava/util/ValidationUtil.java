@@ -3,10 +3,16 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
-import javax.validation.ValidationException;
+import javax.validation.Validator;
+import java.util.Set;
 
 public class ValidationUtil {
+
+    private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
+
     private ValidationUtil() {
     }
 
@@ -56,10 +62,9 @@ public class ValidationUtil {
         return result;
     }
 
-    public static <T extends AbstractBaseEntity> boolean jdbcValidation(T entity) {
-        if (Validation.buildDefaultValidatorFactory().getValidator().validate(entity).isEmpty())
-            return true;
-        else
-            throw new ValidationException();
+    public static <T extends AbstractBaseEntity> void jdbcValidation(T entity) {
+        Set<ConstraintViolation<T>> set = VALIDATOR.validate(entity);
+        if (!set.isEmpty())
+            throw new ConstraintViolationException(set);
     }
 }

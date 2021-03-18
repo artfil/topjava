@@ -49,7 +49,6 @@ public class JdbcUserRepository implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-            insertRoles(user.getRoles(), user.getId());
         } else if (namedParameterJdbcTemplate.update("""
                    UPDATE users SET name=:name, email=:email, password=:password, 
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
@@ -57,8 +56,8 @@ public class JdbcUserRepository implements UserRepository {
             return null;
         } else {
             deleteRoles(user.getId());
-            insertRoles(user.getRoles(), user.getId());
         }
+        insertRoles(user.getRoles(), user.getId());
         return user;
     }
 
@@ -84,9 +83,9 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         Map<Integer, Set<Role>> roles = getAllRoles();
-        return jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER).stream()
-                .peek(user -> user.setRoles(roles.get(user.getId())))
-                .collect(Collectors.toList());
+        List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
+        users.forEach(user -> user.setRoles(roles.get(user.getId())));
+        return users;
     }
 
     public User getRoles(User user) {
