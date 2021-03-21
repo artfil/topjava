@@ -1,0 +1,42 @@
+## curl meal
+****
+
+- get all user meals
+
+`curl -X GET --location "http://localhost:8080/topjava/rest/meals"`
+****
+- get user meal by id 100002
+
+`curl -X GET --location "http://localhost:8080/topjava/rest/meals/100002"`
+****
+- create meal
+
+```
+curl -X POST --location "http://localhost:8080/topjava/rest/meals/"
+   -H "Content-Type: application/json"
+    -d "{
+         \"id\": null,
+          \"dateTime\": \"2021-01-30T10:00:00\",
+          \"description\": \"New\",
+          \"calories\": 1000,
+          \"user\": null
+        }"
+```
+****
+- update meal by id 100002
+
+```
+  curl -X PUT --location "http://localhost:8080/topjava/rest/meals/100002"
+   -H "Content-Type: application/json"
+    -d "{
+          \"id\": 100002,
+          \"dateTime\": \"2021-01-30T10:00:00\",
+          \"description\": \"Update\",
+          \"calories\": 1000,
+          \"user\": null
+        }"
+```
+****
+- delete meal by id 100002
+
+`curl -X DELETE --location "http://localhost:8080/topjava/rest/meals/100002"`
