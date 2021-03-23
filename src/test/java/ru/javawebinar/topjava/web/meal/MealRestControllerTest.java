@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
@@ -12,7 +15,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -84,11 +89,26 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getBetween() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL +
-                "filter?startDate=2020-01-30&endDate=2020-01-30&startTime=09:00&endTime=14:00"))
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter?")
+                .param("startDate", "2020-01-30")
+                .param("endDate", "2020-01-30")
+                .param("startTime", "09:00")
+                .param("endTime", "14:00"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_TO_MATCHER.contentJson(getTos(List.of(meal2, meal1), 2000)));
+    }
+
+    @Test
+    void getEmptyFilter() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter?")
+                .param("startDate", "")
+                .param("endDate", "")
+                .param("startTime", "")
+                .param("endTime", ""))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, 2000)));
     }
 
 
