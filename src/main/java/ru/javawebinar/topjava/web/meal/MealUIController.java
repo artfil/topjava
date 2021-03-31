@@ -18,7 +18,7 @@ import java.util.List;
 public class MealUIController extends AbstractMealController {
 
     @Override
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public List<MealTo> getAll() {
         return super.getAll();
     }
@@ -39,13 +39,13 @@ public class MealUIController extends AbstractMealController {
     }
 
     @Override
-    @GetMapping(value = "/{id}", consumes= MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public Meal get(@PathVariable int id) {
         return super.get(id);
     }
 
     @Override
-    @GetMapping(value = "/filter", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/filter")
     public List<MealTo> getBetween(@RequestParam @Nullable LocalDate startDate,
                                    @RequestParam @Nullable LocalTime startTime,
                                    @RequestParam @Nullable LocalDate endDate,
