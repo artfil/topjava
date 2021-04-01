@@ -29,44 +29,48 @@
                 <label for="endTime" class="col-form-label"><spring:message code="meal.endTime"/></label>
                 <input type="time" class="form-control" id="endTime" name="endTime">
             </div>
-            <div class="modal-footer">
+        </form>
+        <div class="modal-footer">
             <button class="btn btn-primary" onclick="filter()">
                 <span class="fa fa-filter"></span>
                 <spring:message code="meal.filter"/>
             </button>
-            </div>
-        </form>
-    <button class="btn btn-primary" onclick="add()">
-        <span class="fa fa-plus"></span>
-        <spring:message code="common.add"/>
-    </button>
-    <table class="table table-striped" id="datatable">
-        <thead>
-        <tr>
-            <th><spring:message code="meal.dateTime"/></th>
-            <th><spring:message code="meal.description"/></th>
-            <th><spring:message code="meal.calories"/></th>
-            <th></th>
-            <th></th>
-        </tr>
-        </thead>
-        <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealTo"/>
-            <tr data-mealExcess="${meal.excess}">
-                <td>
-                        <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
-                        <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
-                        <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
-                        ${fn:formatDateTime(meal.dateTime)}
-                </td>
-                <td>${meal.description}</td>
-                <td>${meal.calories}</td>
-                <td><a><span class="fa fa-pencil"></span></a></td>
-                <td><a class="delete" id="${meal.id}"><span class="fa fa-remove"></span></a></td>
+        <button class="btn btn-primary" onclick="updateTable()">
+            <span class="fa fa-refresh"></span>
+            <spring:message code="common.clear"/>
+        </button>
+        <button class="btn btn-primary" onclick="add()">
+            <span class="fa fa-plus"></span>
+            <spring:message code="common.add"/>
+        </button>
+        </div>
+        <table class="table table-striped" id="datatable">
+            <thead>
+            <tr>
+                <th><spring:message code="meal.dateTime"/></th>
+                <th><spring:message code="meal.description"/></th>
+                <th><spring:message code="meal.calories"/></th>
+                <th></th>
+                <th></th>
             </tr>
-        </c:forEach>
-    </table>
-</div>
+            </thead>
+            <c:forEach items="${meals}" var="meal">
+                <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealTo"/>
+                <tr data-mealExcess="${meal.excess}">
+                    <td>
+                            <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
+                            <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
+                            <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
+                            ${fn:formatDateTime(meal.dateTime)}
+                    </td>
+                    <td>${meal.description}</td>
+                    <td>${meal.calories}</td>
+                    <td><a><span class="fa fa-pencil"></span></a></td>
+                    <td><a class="delete" id="${meal.id}"><span class="fa fa-remove"></span></a></td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
 </div>
 
 <div class="modal fade" tabindex="-1" id="editRow">
