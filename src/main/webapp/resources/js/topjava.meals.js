@@ -1,4 +1,4 @@
-var ctx;
+var ctx, mealAjaxUrl = "profile/meals/";
 
 function updateFilteredTable() {
     $.ajax({
@@ -15,13 +15,23 @@ function clearFilter() {
 
 $(function () {
     ctx = {
-        ajaxUrl: "profile/meals/",
+        ajaxUrl: mealAjaxUrl,
         datatableApi: $("#datatable").DataTable({
+            "ajax": {
+                "url": mealAjaxUrl,
+                "dataSrc": ""
+            },
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "dateTime"
+                    "data": "dateTime",
+                    "render": function (data, type, row) {
+                        if (type === "display") {
+                            return data.replace("T", " ");
+                        }
+                        return data;
+                    }
                 },
                 {
                     "data": "description"
@@ -30,11 +40,13 @@ $(function () {
                     "data": "calories"
                 },
                 {
-                    "defaultContent": "Edit",
+                    "defaultContent": "",
+                    "render": renderEditBtn,
                     "orderable": false
                 },
                 {
-                    "defaultContent": "Delete",
+                    "defaultContent": "",
+                    "render": renderDeleteBtn,
                     "orderable": false
                 }
             ],
@@ -43,7 +55,10 @@ $(function () {
                     0,
                     "desc"
                 ]
-            ]
+            ],
+            "createdRow": function (row, data, dataIndex) {
+                $(row).attr("data-mealExcess", data.excess);
+            }
         }),
         updateTable: updateFilteredTable
     };
