@@ -57,8 +57,8 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
-    @ExceptionHandler(DuplicateEmailCreate.class)
-    public ErrorInfo duplicateDateTimeMealCreate(HttpServletRequest req, DuplicateEmailCreate e) {
+    @ExceptionHandler(DuplicateDateTimeMealCreate.class)
+    public ErrorInfo duplicateDateTimeMealCreate(HttpServletRequest req, DuplicateDateTimeMealCreate e) {
         return logAndGetErrorInfo(req, e, true, DUPLICATE_DATE_TIME_MEAL_CREATE);
     }
 
