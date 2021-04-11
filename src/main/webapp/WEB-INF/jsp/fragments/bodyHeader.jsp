@@ -5,7 +5,8 @@
 
 <nav class="navbar navbar-dark bg-dark py-0">
     <div class="container">
-        <a href="meals" class="navbar-brand"><img src="resources/images/icon-meal.png"> <spring:message code="app.title"/></a>
+        <a href="meals" class="navbar-brand"><img src="resources/images/icon-meal.png"> <spring:message
+                code="app.title"/></a>
         <sec:authorize access="isAuthenticated()">
             <form:form class="form-inline my-2" action="logout" method="post">
                 <sec:authorize access="hasRole('ADMIN')">
@@ -26,5 +27,13 @@
                 </button>
             </form:form>
         </sec:authorize>
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" role="button" id="dropdownMenuLink"
+               data-toggle="dropdown"><spring:message code="common.language"/></a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="?language=en">English</a>
+                <a class="dropdown-item" href="?language=ru">Русский</a>
+            </div>
+        </div>
     </div>
 </nav>

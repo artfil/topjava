@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.javawebinar.topjava.util.ValidationUtil;
-import ru.javawebinar.topjava.util.exception.ErrorInfo;
-import ru.javawebinar.topjava.util.exception.ErrorType;
-import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.util.exception.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,6 +48,18 @@ public class ExceptionInfoHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
         return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)  // 409
+    @ExceptionHandler(DuplicateEmailCreate.class)
+    public ErrorInfo duplicateMailCreate(HttpServletRequest req, DuplicateEmailCreate e) {
+        return logAndGetErrorInfo(req, e, true, DUPLICATE_MAIL_CREATE);
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)  // 409
+    @ExceptionHandler(DuplicateEmailCreate.class)
+    public ErrorInfo duplicateDateTimeMealCreate(HttpServletRequest req, DuplicateEmailCreate e) {
+        return logAndGetErrorInfo(req, e, true, DUPLICATE_DATE_TIME_MEAL_CREATE);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
