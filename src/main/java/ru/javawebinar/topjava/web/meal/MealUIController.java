@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
@@ -39,15 +38,11 @@ public class MealUIController extends AbstractMealController {
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void createOrUpdate(@Valid Meal meal) {
-        try {
             if (meal.isNew()) {
                 super.create(meal);
             } else {
                 super.update(meal, meal.getId());
             }
-        } catch (DataIntegrityViolationException e) {
-            duplicateDateTimeMealCreate();
-        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import ru.javawebinar.topjava.to.UserTo;
+import ru.javawebinar.topjava.web.ExceptionInfoHandler;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.validation.Valid;
@@ -33,7 +34,7 @@ public class ProfileUIController extends AbstractUserController {
                 status.setComplete();
                 return "redirect:/meals";
             } catch (DataIntegrityViolationException e) {
-                duplicateMailCreate();
+                result.rejectValue("email", ExceptionInfoHandler.DUPLICATE_MAIL_CREATE);
                 return "profile";
             }
         }
@@ -57,7 +58,7 @@ public class ProfileUIController extends AbstractUserController {
                 status.setComplete();
                 return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
             } catch (DataIntegrityViolationException e) {
-                duplicateMailCreate();
+                result.rejectValue("email", ExceptionInfoHandler.DUPLICATE_MAIL_CREATE);
                 return "profile";
             }
         }

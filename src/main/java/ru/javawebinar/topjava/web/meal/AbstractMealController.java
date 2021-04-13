@@ -10,7 +10,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.exception.DuplicateDateTimeMealCreate;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
@@ -22,14 +21,6 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 public abstract class AbstractMealController {
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    protected MessageSource messageSource;
-    protected final String DUPLICATE_DATE_TIME_MEAL_CREATE = "exception.duplicateDateTimeMealCreate";
-
-    public void duplicateDateTimeMealCreate(){
-        throw new DuplicateDateTimeMealCreate(messageSource.getMessage(DUPLICATE_DATE_TIME_MEAL_CREATE, null, LocaleContextHolder.getLocale()));
-    }
 
     @Autowired
     private MealService service;

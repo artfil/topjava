@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,16 +43,11 @@ public class MealRestController extends AbstractMealController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody Meal meal, @PathVariable int id) {
-        try {
             super.update(meal, id);
-        } catch (DataIntegrityViolationException e) {
-            duplicateDateTimeMealCreate();
-        }
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Meal> createWithLocation(@Valid @RequestBody Meal meal) {
-        try {
             Meal created = super.create(meal);
 
             URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -61,10 +55,6 @@ public class MealRestController extends AbstractMealController {
                     .buildAndExpand(created.getId()).toUri();
 
             return ResponseEntity.created(uriOfNewResource).body(created);
-        } catch (DataIntegrityViolationException e) {
-            duplicateDateTimeMealCreate();
-            return null;
-        }
     }
 
     @Override
