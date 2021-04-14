@@ -17,8 +17,7 @@ import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
@@ -128,7 +127,17 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void notValid() throws Exception {
+    void notValidCreate() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(new Meal(null, null, -10)))
+                .with(userHttpBasic(user)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void notValidUpdate() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(new Meal(null, null, -10)))
@@ -140,6 +149,17 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void duplicateDateTimeMealCreate() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(new Meal(meal2.getDateTime(), "burger", 1000)))
+                .with(userHttpBasic(user)))
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void duplicateDateTimeMealUpdate() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(new Meal(meal2.getDateTime(), "burger", 1000)))

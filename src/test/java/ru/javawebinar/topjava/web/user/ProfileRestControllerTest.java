@@ -90,7 +90,16 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void notValid() throws Exception {
+    void notValidCreate() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(new UserTo(null, null, null, null, -10))))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void notValidUpdate() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
@@ -102,6 +111,16 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void duplicateMailCreate() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(new UserTo(null, "Test", admin.getEmail(), "12345", 1000))))
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void duplicateMailUpdate() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))

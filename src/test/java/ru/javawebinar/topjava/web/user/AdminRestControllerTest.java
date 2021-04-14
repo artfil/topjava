@@ -18,10 +18,8 @@ import ru.javawebinar.topjava.web.json.JsonUtil;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javawebinar.topjava.TestUtil.readFromJson;
-import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ru.javawebinar.topjava.TestUtil.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 class AdminRestControllerTest extends AbstractControllerTest {
@@ -95,7 +93,8 @@ class AdminRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
-                .content(JsonUtil.writeValue(updated)))
+                .content(JsonUtil.writeValue(updated))
+                .content(UserTestData.jsonWithPassword(updated, "newPass")))
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
@@ -150,8 +149,18 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void notValid() throws Exception {
-        perform(MockMvcRequestBuilders.put(REST_URL+ USER_ID)
+    void notValidCreate() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(JsonUtil.writeValue(new UserTo(null, null, null, null, -10))))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void notValidUpdate() throws Exception {
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
                 .content(JsonUtil.writeValue(new UserTo(null, null, null, null, -10))))
@@ -162,7 +171,18 @@ class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void duplicateMailCreate() throws Exception {
-        perform(MockMvcRequestBuilders.put(REST_URL+ USER_ID)
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(JsonUtil.writeValue(new UserTo(null, "Test", admin.getEmail(), "12345", 1000))))
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void duplicateMailUpdate() throws Exception {
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
                 .content(JsonUtil.writeValue(new UserTo(null, "Test", admin.getEmail(), "12345", 1000))))
