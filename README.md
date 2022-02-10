@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/272322f2e25946af83132abb69d5e4a9)](https://app.codacy.com/gh/artfil/topjava?utm_source=github.com&utm_medium=referral&utm_content=artfil/topjava&utm_campaign=Badge_Grade_Settings)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f3513cf48fdc42efb86ea378edf94f5e)](https://www.codacy.com/gh/artfil/topjava/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=artfil/topjava&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://api.travis-ci.com/artfil/topjava.svg?branch=master)](https://travis-ci.com/artfil/topjava)
 
